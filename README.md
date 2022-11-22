@@ -1,2 +1,2 @@
 # Hydroponic_Automation
-ML , AI , IoT project
+Streamlit application that predicts action that has to be taken based on stacking 
