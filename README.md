@@ -16,6 +16,9 @@ install dependencies from requirement.txt
 ```python
 pip install -r requirements.txt
 ```
+## Output of the model in a streamlit application
+<img width="212" alt="Picture1" src="https://user-images.githubusercontent.com/82307484/205107795-0aac4879-df1b-49dd-8e51-40a5dbaa40b3.png">
+<img width="207" alt="Picture2" src="https://user-images.githubusercontent.com/82307484/205107814-6b499e58-e17f-40cb-ba33-684e2327848d.png">
 
 ## Contributing
 
