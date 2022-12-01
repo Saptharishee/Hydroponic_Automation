@@ -147,13 +147,6 @@ def action(label):
         return 'pH down pump on, Humidifiers on' #26
     elif (label==27):
         return 'pH up pump on, Humidifiers on' #27
-    
-    
-
-    
-    
-    
-
 def user_report():
     ph= st.slider(' Select pH ',0.0,14.0,key='phval')  
     st.write("pH",ph)
@@ -176,8 +169,20 @@ def user_report():
   }
     report_data = pd.DataFrame(user_report_data, index=[0])
     return report_data
+def stack():
+    clf = [('dtc',dtc),('svc',svc),('knn',knn),('mlp',mlp)] #list of (str, estimator) ('mlp',mlp),('nb',nb)
+    #st.write("Odituu iruku...")
+    stack_model = StackingClassifier( estimators = clf,final_estimator = rfc)
+    #st.write("nadandutu iruku")
+    stack_model.fit(X,y)
+    #st.write("parandutuu iruku")
+    user_result =stack_model.predict(user_data)
+    st.subheader('Your Report: ')
+    st.write(user_result,action(user_result))
 
-
+    score = cross_val_score(stack_model,X,y,cv = 5,scoring = 'accuracy')
+    st.write("The accuracy score of is:",score.mean())
+    return score.mean()
 data=pd.read_csv("D:\Collage\Project reports\AI  and ML\dataset.csv")
 data["EC"]=data["EC"]*700 #converting EC to ppm700
 data["label"]=data.apply(lambda row : categorise(row),axis=1)
@@ -204,36 +209,36 @@ added_df["label"]=added_df.apply(lambda row : categorise(row),axis=1)
 df1 = added_df[added_df.isna().any(axis=1)]
 df1=df1.drop(['created_at','entry_id'],axis=1)
 df1 = df1[df1.isna().any(axis=1)]
+added_df = added_df.reset_index( drop=True)
 
 X=added_df.drop(["label","created_at","entry_id"],axis=1)
-
+# st.write(X.columns)
 y=added_df['label']
-
-X_train, X_test, y_train, y_test =train_test_split(X,y, test_size=.3,random_state=22)
+# st.write(y.columns)
+# X_train, X_test, y_train, y_test =train_test_split(X,y, test_size=.3,random_state=22)
 user_data = user_report()
 st.subheader('User Data')
 st.write(user_data)
-
 
 dtc =  DecisionTreeClassifier()
 rfc = RandomForestClassifier()
 knn =  KNeighborsClassifier()
 nb = GaussianNB()
-mlp=mlp = MLPClassifier(hidden_layer_sizes=(6,5),
+mlp = MLPClassifier(hidden_layer_sizes=(6,5),
                     random_state=5,
                     learning_rate_init=0.01)
 svc = SVC(kernel = 'linear', random_state = 0)
-clf = [dtc,rfc,knn,mlp,svc,nb]
+clf = [dtc,rfc,knn,mlp,svc]
 
 if(st.button("Check")):
-    for algo in clf:
-        algo.fit(X,y)
-        predictedClass=algo.predict(user_data)
-        st.write("The"+str(algo)+" predicts ", predictedClass,action(predictedClass))
-        score = cross_val_score( algo,X,y,cv = 5,scoring = 'accuracy')
-        st.write("The accuracy score of {} is:".format(algo),score.mean())
+    # for algo in clf:
+    #     algo.fit(X,y)
+    #     predictedClass=algo.predict(user_data)
+    #     st.write("The"+str(algo)+" predicts ", predictedClass,action(predictedClass))
+    #     score = cross_val_score( algo,X,y,cv = 5,scoring = 'accuracy')
+    #     st.write("The accuracy score of {} is:".format(algo),score.mean())
 
-    clf = [('dtc',dtc),('rfc',rfc),('knn',knn),('mlp',mlp),('nb',nb)] #list of (str, estimator)
+    clf = [('dtc',dtc),('rfc',rfc),('knn',knn),('mlp',mlp)] #list of (str, estimator) ('mlp',mlp),('nb',nb)
 
     stack_model = StackingClassifier( estimators = clf,final_estimator = svc)
     stack_model.fit(X,y)
@@ -243,5 +248,3 @@ if(st.button("Check")):
 
     score = cross_val_score(stack_model,X,y,cv = 5,scoring = 'accuracy')
     st.write("The accuracy score of is:",score.mean())
-
-    
